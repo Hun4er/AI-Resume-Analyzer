@@ -56,5 +56,5 @@ for match_id, start, end in matches:
     if skill  not in extracted_skills:
         extracted_skills.append(skill)
 
-print("Extracted SKills:")
-print(extracted_skills)
+# print("Extracted SKills:")
+# print(extracted_skills)
