@@ -10,19 +10,14 @@ nlp = spacy.load("en_core_web_sm")
 
 text =clean_text(extract_text_from_pdf("data/sample_resume/Harsh_Mishra_MERN_Stack.pdf")
 )
-
-
 sections = detect_sections(text)
-education_section = sections.get("education",[])
-education_text = "\n".join(education_section)
 
-extracted_education = {
-    "degrees": [],
-    "institute": [],
-    "dates": [],
-    "gpa": [],
-    "status":[]
-    }
+
+education_section = sections.get(
+    "education",
+    []
+)
+
 
 
 degree_dictionary = {
@@ -98,37 +93,6 @@ degree_dictionary = {
     ]
 }
 
-matcher = PhraseMatcher(nlp.vocab,attr="LOWER")
-
-
-patterns = []
-variation_to_degree = {}
-
-
-for degree,variations in degree_dictionary.items():
-    for variation in variations:
-        patterns.append(nlp.make_doc(variation))
-        variation_to_degree[
-            variation.lower()
-        ] = degree
-
-
-matcher.add("EDUCATION", patterns)
-
-doc = nlp(education_text)
-
-matches = matcher(doc)
-
-
-for match_id, start, end in matches:
-    matched_text = doc[start:end].text
-
-    degree = variation_to_degree.get(
-        matched_text.lower()
-    )
-
-    if degree and degree not in extracted_education["degrees"]:
-       extracted_education["degrees"].append(degree)
 
 institution_keywords = [
     "university",
@@ -137,43 +101,11 @@ institution_keywords = [
     "school"
 ]
 
-for line in education_section:
-    clean_line = line.strip()
-    lower_line = clean_line.lower()
-
-    for keyword in institution_keywords:
-        if keyword in lower_line:
-            if clean_line not in extracted_education["institute"]:
-                extracted_education["institute"].append(clean_line)
-                break
 date_patterns = [
-        # 2025-2027
     r"\b\d{4}\s*[-–]\s*\d{4}\b",
-
-
-    # 2025 – Present
     r"\b\d{4}\s*[-–]\s*(?:present|current)\b",
-
-    # Graduated 2025
-    r"\bgraduated\s+\d{4}\b",
-
-
+    r"\bgraduated\s+\d{4}\b"
 ]
-
-for line in education_section:
-    for patterns in date_patterns:
-        matches = re.findall(
-            patterns,
-            line,
-            flags = re.IGNORECASE
-        )
-        for date in matches:
-            date = date.strip()
-
-            if date not in extracted_education['dates']:
-                extracted_education["dates"].append(
-                    date
-                )
 
 gpa_patterns = [
 
@@ -184,20 +116,6 @@ gpa_patterns = [
     r"\bCGPA\s*[:\-]?\s*\d+(?:\.\d+)?\b"
 ]
 
-for patterns in gpa_patterns:
-    matches = re.findall(
-        patterns,
-        education_text,
-        flags = re.IGNORECASE
-    )
-    for gpa in matches:
-        gpa = gpa.strip()
-
-        if gpa not in extracted_education["gpa"]:
-            extracted_education["gpa"].append(
-                gpa
-            )
-
 status_patterns = [
     "pursuing",
     "graduated",
@@ -205,20 +123,123 @@ status_patterns = [
     "current",
     "present"
 ]
+def extract_education(education_section):
+    extracted_education = {
+        "degree" :[],
+        "institutions":[],
+        "dates":[],
+        "gpa":[],
+        "status":[]
+    }
 
-for line in education_section:
-    lower_line = line.lower()
+    education_text = "\n".join(education_section)
 
-    for status in status_patterns:
-        if status in lower_line:
-            status_fomratted = status.capitalize()
+    matcher = PhraseMatcher(nlp.vocab, attr = "LOWER")
 
-            if status_fomratted not in extracted_education["status"]:
-                extracted_education["status"].append(
-                    status_fomratted
+    patterns = []
+
+    variation_to_degree = {}
+
+    for degree, variations in degree_dictionary.items():
+        for variation in variations:
+            patterns.append(
+                nlp.make_doc(variation)
+            )
+            variation_to_degree[
+                variation.lower()
+            ] = degree
+
+    matcher.add(
+        "EDUCATION",
+        patterns
+    )
+
+    doc = nlp(education_text)
+   
+    matches = matcher(doc)
+
+    for match_id, start, end in matches:
+        matched_text  = doc[start:end].text
+        degree = variation_to_degree.get(
+            matched_text.lower()
+        )
+
+        if degree and degree not in extracted_education["degree"]:
+            extracted_education["degree"].append(
+                degree
+            )
+
+
+    for line in education_section:
+        clean_line = line.strip()
+
+        lower_line = clean_line.lower()
+
+        for keyword in institution_keywords:
+            if keyword in lower_line:
+                if clean_line not in extracted_education["institutions"]:
+                    extracted_education["institutions"].append(
+                        clean_line
+
+                    )
+                break
+    for line in education_section:
+        for pattern in date_patterns:
+            matches = re.findall(
+                pattern,
+                line,
+                flags = re.IGNORECASE
+            )
+
+            for date in matches:
+                date = date.strip()
+
+                if date not in extracted_education["dates"]:
+                    extracted_education["dates"].append(
+                        date
+                    )
+
+
+    for pattern in gpa_patterns:
+        matches = re.findall(
+            pattern,
+            education_text,
+            flags=re.IGNORECASE
+        )
+
+        for gpa in matches:
+            gpa = gpa.strip()
+
+            if gpa not in extracted_education["gpa"]:
+                extracted_education["gpa"].append(
+                    gpa
                 )
-extracted_education['gegress'] = list(
-    dict.fromkeys(extracted_education["degrees"])
+
+    for line in education_section:
+        lower_line = line.lower()
+
+        for status in status_patterns:
+            if status in lower_line:
+                status_formatted = status.capitalize()
+
+
+                if status_formatted not in extracted_education["status"]:
+                    extracted_education["status"].append(
+                        status_formatted
+                    )
+
+    for key in extracted_education:
+        extracted_education[key] = list(
+            dict.fromkeys(
+                extracted_education[key]
+            )
+        )
+
+    return extracted_education
+
+education = extract_education(
+    education_section
 )
+
 print("\n----- EXTRACTED EDUCATION -----")
-print(extracted_education)
+print(education)
