@@ -1,9 +1,9 @@
 import spacy
 import re
 from spacy.matcher import PhraseMatcher
-from section_detector import detect_sections
-from text_cleaner import clean_text
-from resume_parser import extract_text_from_pdf
+from components.section_detector import detect_sections
+from components.text_cleaner import clean_text
+from components.resume_parser import extract_text_from_pdf
 
 
 nlp = spacy.load("en_core_web_sm")

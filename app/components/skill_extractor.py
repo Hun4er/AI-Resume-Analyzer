@@ -1,8 +1,8 @@
 import spacy
 from spacy.matcher import PhraseMatcher
-from section_detector import detect_sections
-from text_cleaner import clean_text
-from resume_parser import extract_text_from_pdf
+from components.section_detector import detect_sections
+from components.text_cleaner import clean_text
+from components.resume_parser import extract_text_from_pdf
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -18,15 +18,169 @@ skill_text = " ".join(skill_section)
 def extract_skills(text):
 
     skills_list = {
-        "React.js": ["React.js", "ReactJS", "React JS"],
-        "Node.js": ["Node.js", "NodeJS", "Node JS"],
-        "MongoDB": ["MongoDB", "Mongo DB"],
-        "JavaScript": ["JavaScript", "Javascript", "JS"],
-        "TypeScript": ["TypeScript", "Typescript", "TS"],
-        "Express.js": ["Express.js", "ExpressJS", "Express JS"],
-        "Redux Toolkit": ["Redux Toolkit", "Redux"],
-        "Socket.io": ["Socket.io", "Socket IO"],
-    }
+        "React.js": [
+        "React.js",
+        "ReactJS",
+        "React JS"
+    ],
+
+    "Node.js": [
+        "Node.js",
+        "NodeJS",
+        "Node JS"
+    ],
+
+    "MongoDB": [
+        "MongoDB",
+        "Mongo DB"
+    ],
+
+    "JavaScript": [
+        "JavaScript",
+        "Javascript",
+        "JS"
+    ],
+
+    "TypeScript": [
+        "TypeScript",
+        "Typescript",
+        "TS"
+    ],
+
+    "Express.js": [
+        "Express.js",
+        "ExpressJS",
+        "Express JS"
+    ],
+
+    "Redux Toolkit": [
+        "Redux Toolkit",
+        "Redux"
+    ],
+
+    "Socket.io": [
+        "Socket.io",
+        "Socket IO"
+    ],
+
+    "HTML5": [
+        "HTML5",
+        "HTML"
+    ],
+
+    "CSS3": [
+        "CSS3",
+        "CSS"
+    ],
+
+    "Git": [
+        "Git"
+    ],
+
+    "GitHub": [
+        "GitHub",
+        "Github"
+    ],
+
+    "REST API": [
+        "REST API",
+        "REST APIs",
+        "RESTful API",
+        "RESTful APIs"
+    ],
+
+    "Python": [
+        "Python"
+    ],
+
+    "Java": [
+        "Java"
+    ],
+
+    "C++": [
+        "C++"
+    ],
+
+    "C#": [
+        "C#"
+    ],
+
+    "Next.js": [
+        "Next.js",
+        "NextJS"
+    ],
+
+    "Tailwind CSS": [
+        "Tailwind CSS",
+        "Tailwind"
+    ],
+
+    "Bootstrap": [
+        "Bootstrap"
+    ],
+
+    "MySQL": [
+        "MySQL"
+    ],
+
+    "PostgreSQL": [
+        "PostgreSQL",
+        "Postgres"
+    ],
+
+    "Docker": [
+        "Docker"
+    ],
+
+    "AWS": [
+        "AWS",
+        "Amazon Web Services"
+    ],
+
+    "Firebase": [
+        "Firebase"
+    ],
+
+    "Supabase": [
+        "Supabase"
+    ],
+
+    "TensorFlow": [
+        "TensorFlow"
+    ],
+
+    "PyTorch": [
+        "PyTorch"
+    ],
+
+    "Pandas": [
+        "Pandas"
+    ],
+
+    "NumPy": [
+        "NumPy",
+        "Numpy"
+    ],
+
+    "Scikit-learn": [
+        "Scikit-learn",
+        "Scikit Learn",
+        "sklearn"
+    ],
+
+    "Streamlit": [
+        "Streamlit"
+    ],
+
+    "WebRTC": [
+        "WebRTC"
+    ],
+
+    "JWT": [
+        "JWT",
+        "JSON Web Token"
+    ]
+}
 
     matcher = PhraseMatcher(
         nlp.vocab,
